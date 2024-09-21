@@ -1,24 +1,23 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 
 public class FluidSim extends JPanel {
+	private double[][] prevFluidGrid;
+	private double[][] fluidGrid;
 	private BufferedImage pixelArray;
-	private final int width = 400; // Width of the pixel array
-	private final int height = 400; // Height of the pixel array
-	private Random random = new Random(); // For updating pixels randomly
+	private float fluidHue = 0.6f;
+	private float fluidSaturation = 0.5f;
+	private final int width = 400;
+	private final int height = 400;
 
 	public FluidSim() {
+		fluidGrid = new double[400][400];
 		// Create a BufferedImage with the specified width and height
 		pixelArray = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-		for (int y = 0; y < height; y++) {
-			for (int x = 1; x < width; x++) {
-				// Update each pixel with a random color for demonstration
-				int color = random.nextInt(0xFFFFFF); // Random color
-				pixelArray.setRGB(x, y, color);
-			}
+		for (int y = 1; y < height - 1; y++) {
+			fluidGrid[200][y] = 1f;
 		}
 
 		// Initialize the Timer to update the pixels every 100 milliseconds
@@ -35,11 +34,17 @@ public class FluidSim extends JPanel {
 
 	// Method to update the pixel array based on the previous state
 	private void updatePixels() {
-		for (int y = 0; y < height; y++) {
-			for (int x = 1; x < width; x++) {
-				// Update each pixel with the color of the pixel left of it
-				int color = pixelArray.getRGB(1, y);
-				pixelArray.setRGB(x, y, color);
+		prevFluidGrid = fluidGrid;
+		for (int y = 1; y < height - 1; y++) {
+			for (int x = 1; x < width - 1; x++) {
+				double leftValue = prevFluidGrid[x - 1][y];
+				double rightValue = prevFluidGrid[x + 1][y];
+				double topValue = prevFluidGrid[x][y - 1];
+				double bottomValue = prevFluidGrid[x][y + 1];
+				double totalValue = (leftValue + rightValue + topValue + bottomValue) / 4;
+				fluidGrid[x][y] = totalValue;
+				Color fluidColor = Color.getHSBColor(fluidHue, fluidSaturation, (float)totalValue);
+				pixelArray.setRGB(x, y, fluidColor.getRGB());
 			}
 		}
 		repaint(); // Repaint the panel after updating the pixels
