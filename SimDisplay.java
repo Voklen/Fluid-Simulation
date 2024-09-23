@@ -3,22 +3,27 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class SimDisplay extends JPanel {
-	private double[][] prevFluidGrid;
-	private double[][] fluidGrid;
 	private BufferedImage pixelArray;
+	private FluidSim fluidSim;
 	private float fluidHue = 0.6f;
 	private float fluidSaturation = 0.5f;
-	private final int width = 400;
-	private final int height = 400;
+	private static final int width = 400;
+	private static final int height = 400;
+
+	// Main method to create the frame and show the panel
+	public static void main(String[] args) {
+		JFrame frame = new JFrame("Fluid Simulation");
+		SimDisplay panel = new SimDisplay();
+		frame.add(panel);
+		frame.setSize(width, height);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
 
 	public SimDisplay() {
-		fluidGrid = new double[400][400];
 		// Create a BufferedImage with the specified width and height
 		pixelArray = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-		for (int y = 1; y < height - 1; y++) {
-			fluidGrid[200][y] = 1f;
-		}
+		fluidSim = new FluidSim(width, height);
 
 		// Initialize the Timer to update the pixels every 100 milliseconds
 		Timer timer = new Timer(100, e -> updatePixels());
@@ -34,30 +39,18 @@ public class SimDisplay extends JPanel {
 
 	// Method to update the pixel array based on the previous state
 	private void updatePixels() {
-		prevFluidGrid = fluidGrid;
-		for (int y = 1; y < height - 1; y++) {
-			for (int x = 1; x < width - 1; x++) {
-				double selfBrightness = prevFluidGrid[x][y];
-				double leftBrightness = prevFluidGrid[x - 1][y];
-				double rightBrightness = prevFluidGrid[x + 1][y];
-				double topBrightness = prevFluidGrid[x][y - 1];
-				double bottomBrightness = prevFluidGrid[x][y + 1];
-				double totalBrightness = (selfBrightness + leftBrightness + rightBrightness + topBrightness + bottomBrightness) / 5;
-				fluidGrid[x][y] = totalBrightness;
-				Color fluidColor = Color.getHSBColor(fluidHue, fluidSaturation, (float)totalBrightness);
+		fluidSim.step();
+		double[][] fluidGrid = fluidSim.getFluidGrid();
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				float brightness = (float) fluidGrid[x][y];
+				Color fluidColor = Color.getHSBColor(fluidHue, fluidSaturation, brightness);
 				pixelArray.setRGB(x, y, fluidColor.getRGB());
 			}
 		}
-		repaint(); // Repaint the panel after updating the pixels
+
+		// Repaint the panel after updating the pixels
+		repaint();
 	}
 
-	// Main method to create the frame and show the panel
-	public static void main(String[] args) {
-		JFrame frame = new JFrame("Pixel Array Example");
-		SimDisplay panel = new SimDisplay();
-		frame.add(panel);
-		frame.setSize(400, 400);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-	}
 }
