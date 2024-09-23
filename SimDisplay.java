@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class FluidSim extends JPanel {
+public class SimDisplay extends JPanel {
 	private double[][] prevFluidGrid;
 	private double[][] fluidGrid;
 	private BufferedImage pixelArray;
@@ -11,7 +11,7 @@ public class FluidSim extends JPanel {
 	private final int width = 400;
 	private final int height = 400;
 
-	public FluidSim() {
+	public SimDisplay() {
 		fluidGrid = new double[400][400];
 		// Create a BufferedImage with the specified width and height
 		pixelArray = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -37,13 +37,14 @@ public class FluidSim extends JPanel {
 		prevFluidGrid = fluidGrid;
 		for (int y = 1; y < height - 1; y++) {
 			for (int x = 1; x < width - 1; x++) {
-				double leftValue = prevFluidGrid[x - 1][y];
-				double rightValue = prevFluidGrid[x + 1][y];
-				double topValue = prevFluidGrid[x][y - 1];
-				double bottomValue = prevFluidGrid[x][y + 1];
-				double totalValue = (leftValue + rightValue + topValue + bottomValue) / 4;
-				fluidGrid[x][y] = totalValue;
-				Color fluidColor = Color.getHSBColor(fluidHue, fluidSaturation, (float)totalValue);
+				double selfBrightness = prevFluidGrid[x][y];
+				double leftBrightness = prevFluidGrid[x - 1][y];
+				double rightBrightness = prevFluidGrid[x + 1][y];
+				double topBrightness = prevFluidGrid[x][y - 1];
+				double bottomBrightness = prevFluidGrid[x][y + 1];
+				double totalBrightness = (selfBrightness + leftBrightness + rightBrightness + topBrightness + bottomBrightness) / 5;
+				fluidGrid[x][y] = totalBrightness;
+				Color fluidColor = Color.getHSBColor(fluidHue, fluidSaturation, (float)totalBrightness);
 				pixelArray.setRGB(x, y, fluidColor.getRGB());
 			}
 		}
@@ -53,7 +54,7 @@ public class FluidSim extends JPanel {
 	// Main method to create the frame and show the panel
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Pixel Array Example");
-		FluidSim panel = new FluidSim();
+		SimDisplay panel = new SimDisplay();
 		frame.add(panel);
 		frame.setSize(400, 400);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
