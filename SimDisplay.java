@@ -26,7 +26,7 @@ public class SimDisplay extends JPanel {
 		fluidSim = new FluidSim(width, height);
 
 		// Initialize the Timer to update the pixels every 100 milliseconds
-		Timer timer = new Timer(100, e -> updatePixels());
+		Timer timer = new Timer(10, e -> updatePixels());
 		timer.start();
 	}
 
