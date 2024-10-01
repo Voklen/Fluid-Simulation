@@ -1,25 +1,29 @@
-
 public class FluidSim {
 	private int width;
 	private int height;
-	private double[][] prevFluidGrid;
-	private double[][] fluidGrid;
-	private double rate = 0.5;
+	private Cell[][] prevFluidGrid;
+	private Cell[][] fluidGrid;
+	private double rate = 0.75;
 
 	public FluidSim(int width, int height) {
 		this.width = width;
 		this.height = height;
-		fluidGrid = new double[width][height];
+		fluidGrid = new Cell[width][height];
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < width; y++) {
+				fluidGrid[x][y] = new Cell(0);
+			}
+		}
 
 		// Create line in the middle at the start of the simulation
 		for (int y = 150; y < 251; y++) {
 			for (int x = 150; x < 251; x++) {
-				fluidGrid[x][y] = 1f;
+				fluidGrid[x][y] = new Cell(1);
 			}
 		}
 	}
 
-	public double[][] getFluidGrid() {
+	public Cell[][] getFluidGrid() {
 		return fluidGrid;
 	}
 
@@ -32,14 +36,16 @@ public class FluidSim {
 		// data does not interfear with the diffusion
 		for (int y = 1; y < height - 1; y++) {
 			for (int x = 1; x < width - 1; x++) {
-				double currentVal = prevFluidGrid[x][y];
+				double currentVal = prevFluidGrid[x][y].density;
 
-				double leftVal = prevFluidGrid[x - 1][y];
-				double rightVal = prevFluidGrid[x + 1][y];
-				double topVal = prevFluidGrid[x][y - 1];
-				double bottomVal = prevFluidGrid[x][y + 1];
+				double leftVal = prevFluidGrid[x - 1][y].density;
+				double rightVal = prevFluidGrid[x + 1][y].density;
+				double topVal = prevFluidGrid[x][y - 1].density;
+				double bottomVal = prevFluidGrid[x][y + 1].density;
 				double targetVal = (leftVal + rightVal + topVal + bottomVal) / 4;
-				fluidGrid[x][y] = currentVal + rate * (targetVal - currentVal);
+				double finalDensity = currentVal + rate * (targetVal - currentVal);
+
+				fluidGrid[x][y] = new Cell(finalDensity);
 			}
 		}
 	}

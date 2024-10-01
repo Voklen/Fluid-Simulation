@@ -40,10 +40,10 @@ public class SimDisplay extends JPanel {
 	// Method to update the pixel array based on the previous state
 	private void updatePixels() {
 		fluidSim.step();
-		double[][] fluidGrid = fluidSim.getFluidGrid();
+		Cell[][] fluidGrid = fluidSim.getFluidGrid();
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				float brightness = (float) fluidGrid[x][y];
+				float brightness = (float) fluidGrid[x][y].density;
 				Color fluidColor = Color.getHSBColor(fluidHue, fluidSaturation, brightness);
 				pixelArray.setRGB(x, y, fluidColor.getRGB());
 			}
