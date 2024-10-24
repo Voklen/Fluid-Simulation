@@ -33,7 +33,7 @@ public class FluidSim {
 		// Loop through each cell and update it based on the mean of the surrounding
 		// cells to create diffusion
 		// This takes the data from `prevFluidGrid` and writes to `fluidGrid` so written
-		// data does not interfear with the diffusion
+		// data does not interfere with the diffusion
 		for (int y = 1; y < height - 1; y++) {
 			for (int x = 1; x < width - 1; x++) {
 				double currentVal = prevFluidGrid[x][y].density;
